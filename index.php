@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+if(isset($_SESSION['user_info']))
+{
+    header("location:twitter_oauth.php");
+}
+?>
 <html lang="en">
     <head>
         <meta charset="utf-8">

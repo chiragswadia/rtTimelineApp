@@ -41,6 +41,7 @@ $pdf->MultiCell(0, 0.25, $lipsum2, 1, "R");
 $pdf->MultiCell(0, 0.15, $lipsum3, 'B', "J");
 
 $pdf->AddPage();
+$tweet10 = stripslashes($tweet10);
 $pdf->Write(0.5, $tweet10);
 $pdf ->Output();
 

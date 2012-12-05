@@ -17,19 +17,19 @@ $_SESSION['access_token'] = $access_token;
 
 // getting the user's info
 $user_info = $twitteroauth->get('account/verify_credentials');
+$_SESSION['user_info'] = $user_info;
 
 // fetching tweets of logged in user from user_timeline.json
-$tweets = $twitteroauth->get('https://api.twitter.com/1/statuses/user_timeline.json?include_rts=1&count=10&screen_name='.$user_info->screen_name);
-
-// performing json functions and storing it in a variable
-$tweets = json_encode($tweets);
-$twt = json_decode($tweets);
-
+$twt = $twitteroauth->get('https://api.twitter.com/1/statuses/user_timeline.json?include_rts=1&count=10&screen_name='.$user_info->screen_name);
+$twt = json_encode($twt);
+$twt = json_decode($twt);
 
 } else {
     // Something's missing, go back to square 1
     header('location:twitter_login.php');
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -61,12 +61,13 @@ $twt = json_decode($tweets);
 
 <body>
 	<div id="container">
-            <div style="position:absolute; right:5%; top:2%;"><a href="logout.php">Logout</a></div> <br><br>
+            <div style="position:absolute; right:5%; top:2%;"><a href="logout.php"><span style="font-size:10pt;">Logout</span></a></div> <br><br>
 		<div id="example">
                     
                         <!-- jquery slider tweets -->
 			<div id="slides">
 				<div class="slides_container" style="font-size:25pt">
+                                    
 					<a href="http://www.twitter.com/<?php echo $user_info->screen_name ?>"target="_blank"><h2><div id="twt0"><?php echo $twt[0]->text; ?></div></h2></a>
 					<a href="http://www.twitter.com/<?php echo $user_info->screen_name ?>"target="_blank"><h2><div id="twt1"><?php echo $twt[1]->text; ?></div></h2></a>
                                         <a href="http://www.twitter.com/<?php echo $user_info->screen_name ?>"target="_blank"><h2><div id="twt2"><?php echo $twt[2]->text; ?></div></h2></a>
@@ -91,13 +92,13 @@ $twt = json_decode($tweets);
             <!-- ---------------------------------------------------------------------------------------------- -->
             <!-- generate pdf form -->
             <?php
-            $tweet10 = $twt[0]->text."\n".$twt[1]->text."\n".$twt[2]->text."\n".$twt[3]->text."\n".$twt[4]->text."\n".$twt[5]->text."\n".$twt[6]->text."\n".$twt[7]->text."\n".$twt[8]->text."\n".$twt[9]->text;
-           
+            $tweet10 = $twt[0]->text."\n"."\n".$twt[1]->text."\n"."\n".$twt[2]->text."\n"."\n".$twt[3]->text."\n"."\n".$twt[4]->text."\n"."\n".$twt[5]->text."\n"."\n".$twt[6]->text."\n"."\n".$twt[7]->text."\n"."\n".$twt[8]->text."\n"."\n".$twt[9]->text;
+            
             ?>
             <form action="pdf/genpdf.php" method="POST">
-                <div style="display:none">
-                <input type="text" name ="tweets" value="<?php echo $tweet10 ?>"/> </div>
-                <input type="submit" value="Generate PDF" target="_blank"/>
+                 <div style="display:none"> -->
+                <textarea name ="tweets" ><?php echo $tweet10 ?></textarea> </div>
+                <input type="submit" value="Generate PDF" style="font-size:12pt;" target="_blank"/>
             </form>
 
             <!-- ---------------------------------------------------------------------------------------------- -->
@@ -113,6 +114,7 @@ $follower_list = $twitteroauth->get('https://api.twitter.com/1/followers/ids.jso
 
 $followers = array();
 $count = 10;
+
 
 //traversing through all the followers to fetch username and profile pics of any 10 followers
 foreach($follower_list as $key => $value)
@@ -134,13 +136,18 @@ foreach($follower_list as $key => $value)
                     {
                             if($key3 == "screen_name")
                                 {
-                                    echo "<b>".$value3."</b>";
+                                echo '<span style="font-size:12pt">';
+                                echo '<a href="#" onclick="load_follower_tweets(\''. $value3 .'\');">'.'<b>'.$value3.'</b>'.'</a>';
+                                echo '</span>';
+                                echo '&nbsp; &nbsp;';
                                     $followers[] = $value3;
                                 }
                             if($key3 == "profile_image_url" )
                                 { ?>
-                                    <img src="<?php echo $value3; ?>"/>
-                      <?php }
+                                
+                            <img src="<?php echo $value3; ?>"/>
+                                    
+                      <?php } 
 
                  }
             }
@@ -155,7 +162,7 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
      <br><br>
 
      <!-- form to search for a follower  -->
-     Search Followers &nbsp;
+     <span style="font-size:12pt;">Search Followers</span> &nbsp;
      <input type="text" name="search" id="search"/>
 
      </html>
@@ -192,4 +199,29 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
             
         });
     });
+
+    function load_follower_tweets(values)
+    {
+          $.ajax({
+            url: "load_follower_tweets.php",
+            async: false,
+            type: "GET",
+            data: "follower_name="+values,
+            dataType: "json",
+
+            success: function(result) {
+               $("#twt0").html(result[0]);
+               $("#twt1").html(result[1]);
+               $("#twt2").html(result[2]);
+               $("#twt3").html(result[3]);
+               $("#twt4").html(result[4]);
+               $("#twt5").html(result[5]);
+               $("#twt6").html(result[6]);
+               $("#twt7").html(result[7]);
+               $("#twt8").html(result[8]);
+               $("#twt9").html(result[9]);
+
+            }
+            });
+    }
 </script>
