@@ -7,7 +7,7 @@ set_time_limit(0);
 $twitteroauth = new TwitterOAuth('AP0YK30bs4pSnISKZHcfMA', 'NHsgPDkHF9eeA8wvCOk9R8uiiknGYV3Ao3SYZscgk');
 
 // Requesting authentication tokens, the parameter is the URL we will be redirected to
-$request_token = $twitteroauth->getRequestToken('http://localhost.com/rtTimeLineApp/twitter_oauth.php');
+$request_token = $twitteroauth->getRequestToken('http://localhost.com/rtTimelineApp/twitter_oauth.php');
 
 // Saving them into the session
 $_SESSION['oauth_token'] = $request_token['oauth_token'];
@@ -20,6 +20,6 @@ if($twitteroauth->http_code==200){
     header('Location: '. $url);
 } else {
     
-    die('Something wrong happened.');
+    die('Something wrong happened. <br> Or maybe Twitter is down');
 }  
 ?>
