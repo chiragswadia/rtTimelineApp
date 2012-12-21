@@ -104,7 +104,7 @@ $twt = $twitteroauth->get('https://api.twitter.com/1/statuses/user_timeline.json
                 <input type="submit" value="Generate PDF" style="font-size:12pt;" target="_blank"/>
             </form>
             <br>
-            <div id = "loading" style="display:none"><img src = "img/loading.gif"></div>
+            <span id ="loading" style="font-size:12pt; font-weight: bold; color:#0000ff"></span>
 
             <!-- ---------------------------------------------------------------------------------------------- -->
             
@@ -175,21 +175,20 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
 
      <!-- jquery ajax for auto-complete and loading tweets of the selected follower and display in the jquery slider -->
 <script type="text/javascript">
-    
-	$(function() {
-           
+    	$(function() {
          $( "#search" ).autocomplete({
             source:'source.php',
             select: function( event, ui ) {
-            show();
-            
+           
             $.ajax({
             url: "load_follower_tweets.php",
-            async: false,
+            //async: false,
             type: "GET",
             data: "follower_name="+ui.item.value,
             dataType: "json",
-
+            beforeSend: function(){
+                $("#loading").text("loading...");
+            },
             success: function(result) {
 
                  $("#twtlink0").attr("href", "http://www.twitter.com/"+ui.item.value+"/status/"+result[12] );
@@ -219,6 +218,9 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
                var image_link = '<img src='+result[11]+'>';
                $("#image").html(image_link);
                
+            },
+              complete: function(){
+                 $("#loading").text("Tweets Successfully Loaded");
             }
             });
     
@@ -229,14 +231,15 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
 
     function load_follower_tweets(values)
     {
-           show();
           $.ajax({
             url: "load_follower_tweets.php",
-            async: false,
+            //async: false,
             type: "GET",
             data: "follower_name="+values,
             dataType: "json",
-
+            beforeSend: function(){
+                $("#loading").text("loading...");
+            },
             success: function(result) {
 
                     $("#twtlink0").attr("href", "http://www.twitter.com/"+values+"/status/"+result[12] );
@@ -265,20 +268,12 @@ $_SESSION['followers'] = $followers; // store the followers list we get in an se
                var image_link = '<img src='+result[11]+'>';
                $("#image").html(image_link);
                
+            },
+            complete: function(){
+                 $("#loading").text("Tweets Successfully Loaded");
             }
             });
             
     }
-
-
-function show() {
-    document.getElementById("loading").style.display="block";
-    setTimeout("hide()", 7000);  // 5 seconds
-}
-
-function hide() {
-    document.getElementById("loading").style.display="none";
-}
-
 
 </script>
